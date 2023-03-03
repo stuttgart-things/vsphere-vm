@@ -1,7 +1,7 @@
 # stuttgart-things/vsphere-vm
 terraform module for building vsphere vms (based on an existing vcenter templates)
 
-## how to use this terraform module?
+## how to use 
 
 ### 1. create a tf file wich calls the module
 
