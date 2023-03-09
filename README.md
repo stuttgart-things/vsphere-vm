@@ -175,4 +175,4 @@ BSD
 Author Information
 ------------------
 
-Patrick Hermann, SVA GmbH 12/2019
+Patrick Hermann, Stuttgart-Things 12/2019
