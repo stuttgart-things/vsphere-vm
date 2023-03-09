@@ -142,7 +142,7 @@ EOF
 ```
 export TF_VAR_vsphere_user=
 export TF_VAR_vsphere_password=
-export TF_VAR_vsphere_server=10.31.101.51
+export TF_VAR_vsphere_server=
 export TF_VAR_vm_ssh_user=
 export TF_VAR_vm_ssh_password=
 ```
@@ -150,7 +150,8 @@ export TF_VAR_vm_ssh_password=
 ### 3. execute terraform / create vm
 ```
 terraform init
-terraform apply --auto-approve
+terraform plan
+terraform apply
 ```
 
 ### 4. destroy vm
@@ -162,8 +163,9 @@ Role history
 ----------------
 | date  | who | changelog |
 |---|---|---|
-|2021-03-03  | Patrick Hermann | updated tf code + Readme
-|2019-12-21  | Patrick Hermann | intial commit for this module in codehub
+|2023-03-09 | Patrick Hermann | updated for move to github
+|2021-03-03 | Patrick Hermann | updated tf code + Readme
+|2019-12-21 | Patrick Hermann | intial commit for this module in codehub
 
 License
 -------
