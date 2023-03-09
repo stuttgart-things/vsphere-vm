@@ -17,7 +17,7 @@ module "newprovider" {
   vm_num_cpus            = 6
   firmware               = "bios"
   vsphere_vm_folder_path = var.vsphere_vm_folder_path
-  source                 = "https://artifacts.tiab.labda.sva.de/modules/vsphere-vm.zip"
+  source                 = "git::https://github.com/stuttgart-things/vsphere-vm.git"
   vsphere_datacenter     = var.vsphere_datacenter
   vsphere_datastore      = var.vsphere_datastore
   vsphere_resource_pool  = var.vsphere_resource_pool
