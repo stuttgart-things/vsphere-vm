@@ -1,6 +1,6 @@
 # stuttgart-things/vsphere-vm
 
-terraform module for building/cloning vsphere vms (based on an existing vcenter templates)
+terraform module for building/cloning vsphere vms based on existing templates.
 
 ## HOW TO USE
 
