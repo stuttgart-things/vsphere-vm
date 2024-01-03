@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 1.6.6"
 
   required_providers {
-    kubernetes = {
+    vsphere = {
       source  = "hashicorp/vsphere"
       version = ">= 2.6.1"
     }
