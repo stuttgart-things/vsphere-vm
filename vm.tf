@@ -19,8 +19,8 @@ resource "vsphere_virtual_machine" "vm" {
   disk {
     label            = var.vm_disk_label
     size             = var.vm_disk_size
-    eagerly_scrub    = data.vsphere_virtual_machine.template.disks.0.eagerly_scrub
-    thin_provisioned = data.vsphere_virtual_machine.template.disks.0.thin_provisioned
+    eagerly_scrub    = data.vsphere_virtual_machine.template.disks[0].eagerly_scrub
+    thin_provisioned = data.vsphere_virtual_machine.template.disks[0].thin_provisioned
   }
   clone {
     template_uuid = data.vsphere_virtual_machine.template.id
