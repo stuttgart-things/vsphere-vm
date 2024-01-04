@@ -62,9 +62,6 @@ variable "vm_memory" {
   default     = 4096
   type        = number
   description = "amount of memory of the vm"
-
-
-
 }
 
 variable "vm_num_cpus" {
