@@ -1,14 +1,14 @@
 resource "vsphere_virtual_machine" "vm" {
-  name = count.index > 0 ? "${var.vsphere_vm_name}-${count.index + 1}" : var.vsphere_vm_name 
+  name             = count.index > 0 ? "${var.vsphere_vm_name}-${count.index + 1}" : var.vsphere_vm_name
   folder           = var.vsphere_vm_folder_path
   count            = var.vm_count
   resource_pool_id = data.vsphere_resource_pool.pool.id
   datastore_id     = data.vsphere_datastore.datastore.id
-  firmware = var.firmware
-  num_cpus  = var.vm_num_cpus
-  memory    = var.vm_memory
-  guest_id  = data.vsphere_virtual_machine.template.guest_id
-  scsi_type = data.vsphere_virtual_machine.template.scsi_type
+  firmware         = var.firmware
+  num_cpus         = var.vm_num_cpus
+  memory           = var.vm_memory
+  guest_id         = data.vsphere_virtual_machine.template.guest_id
+  scsi_type        = data.vsphere_virtual_machine.template.scsi_type
 
   annotation = var.annotation
 

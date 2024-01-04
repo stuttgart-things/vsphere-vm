@@ -38,6 +38,12 @@ variable "vsphere_vm_name" {
   default     = "terraform-vm"
   type        = string
   description = "name of vsphere virtual machine"
+
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z\\-\\0-9]{1,32}$", var.vsphere_vm_name))
+    error_message = "VM name must start with letter, only contain letters, numbers, dashes, and must be between 1 and 32 characters."
+  }
+
 }
 
 variable "firmware" {
@@ -56,12 +62,21 @@ variable "vm_memory" {
   default     = 4096
   type        = number
   description = "amount of memory of the vm"
+
+
+
 }
 
 variable "vm_num_cpus" {
   default     = 4
   type        = number
   description = "amount of cpus from the vm"
+
+  validation {
+    condition     = contains([2, 4, 6, 8, 10, 12, 16], var.vm_num_cpus)
+    error_message = "Valid values for vm_num_cpus are (2, 4, 6, 8, 10, 12, 16)"
+  }
+
 }
 
 variable "vm_disk_label" {
@@ -71,15 +86,27 @@ variable "vm_disk_label" {
 }
 
 variable "vm_disk_size" {
-  default     = "30"
+  default     = "32"
   type        = string
   description = "size of disk"
+
+  validation {
+    condition     = contains(["20", "32", "64", "96", "128", "196", "256"], var.vm_disk_size)
+    error_message = "Valid values for vm_disk_size are (20, 32, 64, 96, 128, 196, 256)"
+  }
+
 }
 
 variable "vm_count" {
   default     = 1
   type        = number
   description = "amount of vms"
+
+  validation {
+    condition     = var.vm_count >= 1 && var.vm_count <= 5 && floor(var.vm_count) == var.vm_count
+    error_message = "Accepted values: 1-5."
+  }
+
 }
 
 variable "vm_ssh_user" {
