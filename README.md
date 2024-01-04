@@ -70,7 +70,12 @@ variable "vm_ssh_password" {
 ```bash
 terraform init
 terraform plan
-terraform apply --auto-approve
+terraform apply --auto-approve \
+-var "vsphere_server=<FQDN>" \
+-var "vm_ssh_user=<USER>" \
+-var "vm_ssh_password=<PASSWORD>" \
+-var "vsphere_user=<VSPHERE_USER>" \
+-var "vsphere_password=<VSPHERE_PASSWORD>"
 ```
 
 ### DESTROY VM
