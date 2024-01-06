@@ -1,10 +1,16 @@
 ---
 name: Package-Terraform
 on:
-  #workflow_dispatch:
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        required: true
+      release-message:
+        required: true
+  
+  #push:
+    #tags:
+     # - '*'
 
 jobs:
   Package-Terraform:
@@ -30,5 +36,5 @@ jobs:
         with:
           name: vsphere-vm
           artifacts: "vsphere-vm.zip"
-          body: "hello"
-          #tag: "vsphere-vm-2.6.1-2"
+          body: ${{ github.event.inputs.release-message }}
+          tag: ${{ github.event.inputs.tag }} #"vsphere-vm-2.6.1-2"
