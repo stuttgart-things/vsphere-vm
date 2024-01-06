@@ -24,15 +24,11 @@ jobs:
       - name: Package module
         run: |
           zip -r vsphere-vm.zip * -j
-          
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.64.0
-        env:
-          WITH_V: true
-          
+                    
       - name: Release module
         uses: ncipollo/release-action@v1.13.0
         with:
           name: vsphere-vm
           artifacts: "vsphere-vm.zip"
           body: "hello"
+          tag: "vsphere-vm-2.6.1"
