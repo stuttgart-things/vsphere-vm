@@ -31,4 +31,4 @@ jobs:
           name: vsphere-vm
           artifacts: "vsphere-vm.zip"
           body: "hello"
-          tag: "vsphere-vm-2.6.1"
+          tag: "vsphere-vm-2.6.1-2"
