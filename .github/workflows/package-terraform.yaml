@@ -2,6 +2,9 @@
 name: Package-Terraform
 on:
   workflow_dispatch:
+#  push:
+#    tags:
+#    - '*'
 
 jobs:
   Package-Terraform:
@@ -13,5 +16,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.1
-      - run: |
-          zip -r vsphere-vm.zip * -j   
+      - name: Package module
+        run: |
+          zip -r vsphere-vm.zip * -j
+      - name: Release module
+        uses: ncipollo/release-action@v1.13.0
+        with:
+          name: vsphere-vm
+          artifacts: "vsphere-vm.zip"
+          body: "hello"
