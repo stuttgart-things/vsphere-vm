@@ -1,0 +1,17 @@
+---
+name: Package-Terraform
+on:
+  workflow_dispatch:
+
+jobs:
+  Package-Terraform:
+    runs-on: arc-runner-scale-set-vsphere-vm
+    container:
+      image: joshkeegan/zip:3.19.0
+    environment: k8s
+    continue-on-error: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.1
+      - run: |
+          zip -r vsphere-vm.zip * -j   
