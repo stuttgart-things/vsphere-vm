@@ -12,13 +12,24 @@ jobs:
     container:
       image: joshkeegan/zip:3.19.0
     environment: k8s
+    permissions:
+      contents: write
     continue-on-error: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: '0'
+          
       - name: Package module
         run: |
           zip -r vsphere-vm.zip * -j
+          
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.64.0
+        env:
+          WITH_V: true
+          
       - name: Release module
         uses: ncipollo/release-action@v1.13.0
         with:
