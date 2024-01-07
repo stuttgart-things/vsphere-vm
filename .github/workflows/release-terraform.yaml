@@ -21,6 +21,7 @@ jobs:
       terraform-version: 1.6
       tflint-version: "v0.50.0"
       continue-error: false
+
   release-terraform:
     if: github.event.ref == 'refs/heads/main'
     name: Release
