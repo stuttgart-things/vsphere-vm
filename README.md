@@ -198,6 +198,14 @@ spec:
 
 </details>
 
+<details><summary><b>CREATE WORKSPACE</b></summary>
+
+```bash
+kubectl apply -f <WORKSPACE-DEFINITION>.yaml
+```
+
+</details>
+
 <details><summary><b>DELETE WORKSPACE</b></summary>
 
 ```bash
