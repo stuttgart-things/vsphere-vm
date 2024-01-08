@@ -2,7 +2,9 @@
 
 terraform module for building/cloning vsphere vms based on existing vm-templates
 
-## CALL THE MODULE
+## USAGE
+
+<details><summary><b>TERRAFORM MODULE CALL</b></summary>
 
 change the values for the variables according to your vsphere environment and existing vm templates.
 
@@ -65,7 +67,9 @@ variable "vm_ssh_password" {
 }
 ```
 
-## EXECUTE TERRAFORM / CREATE VM
+</details>
+
+<details><summary><b>EXECUTE TERRAFORM / CREATE VM</b></summary>
 
 ```bash
 terraform init
@@ -78,11 +82,98 @@ terraform apply --auto-approve \
 -var "vsphere_password=<VSPHERE_PASSWORD>"
 ```
 
-### DESTROY VM
+</details>
+
+<details><summary><b>DESTROY VM(S)</b></summary>
 
 ```bash
 terraform destroy --auto-approve
 ```
+
+</details>
+
+<details><summary><b>CROSSPLANE INLINE WORKSPACE</b></summary>
+
+```yaml
+apiVersion: tf.upbound.io/v1beta1
+kind: Workspace
+metadata:
+  name: vsphere-vm-labda-1
+  annotations:
+    crossplane.io/external-name: vsphere-vm-labda-1
+spec:
+  forProvider:
+    source: Inline
+    module: |
+      module "labda-vm" {
+        source = "github.com/stuttgart-things/vsphere-vm"
+        vm_count               = 1
+        vsphere_vm_name        = "michigan3"
+        vm_memory              = 6144
+        vm_disk_size           = "64"
+        vm_num_cpus            = 6
+        firmware               = "bios"
+        vsphere_vm_folder_path = "stuttgart-things/testing"
+        vsphere_datacenter     = "/NetApp-HCI-Datacenter"
+        vsphere_datastore      = "/NetApp-HCI-Datacenter/datastore/DatastoreCluster/NetApp-HCI-Datastore-02"
+        vsphere_resource_pool  = "Resources"
+        vsphere_network        = "/NetApp-HCI-Datacenter/network/tiab-prod"
+        vsphere_vm_template    = "/NetApp-HCI-Datacenter/vm/stuttgart-things/vm-templates/ubuntu23"
+        vm_ssh_user            = var.vm_ssh_user
+        vm_ssh_password        = var.vm_ssh_password
+        bootstrap              = ["echo STUTTGART-THINGS"]
+        annotation             = "VSPHERE-VM BUILD w/ TERRAFORM CROSSPLANE PROVIDER FOR STUTTGART-THINGS"
+      }
+
+      provider "vsphere" {
+        user                 = var.vsphere_user
+        password             = var.vsphere_password
+        vsphere_server       = var.vsphere_server
+        allow_unverified_ssl = true
+      }
+
+      variable "vsphere_server" {
+        type        = string
+        default     = false
+        description = "vsphere server"
+      }
+
+      variable "vsphere_user" {
+        type        = string
+        default     = false
+        description = "password of vsphere user"
+      }
+
+      variable "vsphere_password" {
+        type        = string
+        default     = false
+        description = "password of vsphere user"
+      }
+
+      variable "vm_ssh_user" {
+        type        = string
+        default     = false
+        description = "username of ssh user for vm"
+      }
+
+      variable "vm_ssh_password" {
+        type        = string
+        default     = false
+        description = "password of ssh user for vm"
+      }
+
+    varFiles:
+      - source: SecretKey
+        secretKeyRef:
+          namespace: default
+          name: vsphere-tfvars
+          key: terraform.tfvars
+  writeConnectionSecretToRef:
+    namespace: default
+    name: terraform-workspace-vsphere-vm-labda-1
+```
+
+</details>
 
 ## Author Information
 
