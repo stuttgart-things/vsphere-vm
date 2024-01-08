@@ -198,6 +198,12 @@ spec:
 
 </details>
 
+<details><summary><b>DELETE WORKSPACE</b></summary>
+
+```bash
+kubectl delete workspace vsphere-vm-labda-1
+```
+
 ## Author Information
 
 ```bash
