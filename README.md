@@ -204,6 +204,8 @@ spec:
 kubectl delete workspace vsphere-vm-labda-1
 ```
 
+</details>
+
 ## Author Information
 
 ```bash
