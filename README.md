@@ -2,7 +2,7 @@
 
 terraform module for building/cloning vsphere vms based on existing vm-templates
 
-## USAGE
+## USAGE TERRAFORM CLI
 
 <details><summary><b>TERRAFORM MODULE CALL</b></summary>
 
@@ -74,6 +74,7 @@ variable "vm_ssh_password" {
 ```bash
 terraform init
 terraform plan
+
 terraform apply --auto-approve \
 -var "vsphere_server=<FQDN>" \
 -var "vm_ssh_user=<USER>" \
@@ -92,7 +93,28 @@ terraform destroy --auto-approve
 
 </details>
 
-<details><summary><b>CROSSPLANE INLINE WORKSPACE</b></summary>
+## USAGE CROSSPLANE
+
+<details><summary><b>CREATE TFVARS AS SECRET</b></summary>
+
+```bash
+# CREATE terraform.tfvars
+cat <<EOF > terraform.tfvars
+vsphere_user = "<USER>"
+vsphere_password = "<PASSWORD>"
+vm_ssh_user = "<SSH_USER>"
+vm_ssh_password = "<SSH_PASSWORD>"
+EOF
+
+```bash
+# CREATE SECRET
+kubectl create secret generic vsphere-tfvars --from-file=terraform.tfvars
+```
+
+</details>
+
+
+<details><summary><b>DEFINE (INLINE) WORKSPACE</b></summary>
 
 ```yaml
 apiVersion: tf.upbound.io/v1beta1
