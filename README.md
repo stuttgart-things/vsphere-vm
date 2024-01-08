@@ -105,6 +105,7 @@ vsphere_password = "<PASSWORD>"
 vm_ssh_user = "<SSH_USER>"
 vm_ssh_password = "<SSH_PASSWORD>"
 EOF
+```
 
 ```bash
 # CREATE SECRET
