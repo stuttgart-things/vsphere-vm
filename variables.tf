@@ -123,3 +123,27 @@ variable "bootstrap" {
   type        = list(string)
   default     = ["whoami", "hostname"]
 }
+
+variable "vsphere_server" {
+  default     = false
+  type        = string
+  description = "vsphere server"
+}
+
+variable "vsphere_user" {
+  default     = false
+  type        = string
+  description = "password of vsphere user"
+}
+
+variable "vsphere_password" {
+  default     = false
+  type        = string
+  description = "password of vsphere user"
+}
+
+variable "unverified_ssl" {
+  default     = true
+  type        = bool
+  description = "enable unverified_ssl"
+}
