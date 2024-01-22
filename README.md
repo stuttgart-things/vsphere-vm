@@ -27,13 +27,10 @@ module "labda-vm" {
   vm_ssh_password         = var.vm_ssh_password
   bootstrap               = ["echo STUTTGART-THINGS"]
   annotation              = "VSPHERE-VM BUILD w/ TERRAFORM FOR STUTTGART-THINGS"
-}
-
-provider "vsphere" {
-  user                 = var.vsphere_user
-  password             = var.vsphere_password
-  vsphere_server       = var.vsphere_server
-  allow_unverified_ssl = true
+  user                    = var.vsphere_user
+  password                = var.vsphere_password
+  vsphere_server          = var.vsphere_server
+  allow_unverified_ssl    = true
 }
 
 variable "vsphere_server" {
