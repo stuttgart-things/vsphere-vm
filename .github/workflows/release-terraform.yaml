@@ -17,8 +17,8 @@ jobs:
     with:
       environment-name: k8s
       runs-on: arc-runner-scale-set-vsphere-vm
-      terraform-version: 1.6
-      tflint-version: "v0.50.0"
+      terraform-version: 1.7.5
+      tflint-version: v0.50.3
       continue-error: false
 
   release-terraform:
