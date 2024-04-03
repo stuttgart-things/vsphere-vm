@@ -1,10 +1,10 @@
 terraform {
-  required_version = ">= 1.5.5"
+  required_version = ">= 1.7.5"
 
   required_providers {
     vsphere = {
       source  = "hashicorp/vsphere"
-      version = ">= 2.6.1"
+      version = ">= 2.7.0"
     }
   }
 }
