@@ -9,57 +9,51 @@ terraform module for building/cloning vsphere vms based on existing vm-templates
 change the values for the variables according to your vsphere environment and existing vm templates.
 
 ```hcl
-module "labda-vm" {
-  source                  = "github.com/stuttgart-things/vsphere-vm"
-  vm_count                = 1
-  vsphere_vm_name         = "michigan"
-  vm_memory               = 6144
-  vm_disk_size            = "64"
-  vm_num_cpus             = 6
-  firmware                = "bios"
-  vsphere_vm_folder_path  = "stuttgart-things/testing"
-  vsphere_datacenter      = "/NetApp-HCI-Datacenter"
-  vsphere_datastore       = "/NetApp-HCI-Datacenter/datastore/DatastoreCluster/NetApp-HCI-Datastore-02"
-  vsphere_resource_pool   = "Resources"
-  vsphere_network         = "/NetApp-HCI-Datacenter/network/tiab-prod"
-  vsphere_vm_template     = "/NetApp-HCI-Datacenter/vm/stuttgart-things/vm-templates/ubuntu23"
-  vm_ssh_user             = var.vm_ssh_user
-  vm_ssh_password         = var.vm_ssh_password
-  bootstrap               = ["echo STUTTGART-THINGS"]
-  annotation              = "VSPHERE-VM BUILD w/ TERRAFORM FOR STUTTGART-THINGS"
-  user                    = var.vsphere_user
-  password                = var.vsphere_password
-  vsphere_server          = var.vsphere_server
-  allow_unverified_ssl    = true
+module "manager-dev" {
+  source                 = "github.com/stuttgart-things/vsphere-vm?ref=v1.7.5-2.7.0"
+  vm_count               = 1
+  vsphere_vm_name        = "manager-dev"
+  vm_memory              = 12288
+  vm_disk_size           = "128"
+  vm_num_cpus            = 12
+  firmware               = "bios"
+  vsphere_vm_folder_path = "stuttgart-things/dev"
+  vsphere_datacenter     = "/NetApp-HCI-Datacenter"
+  vsphere_datastore      = "/NetApp-HCI-Datacenter/datastore/DatastoreCluster/NetApp-HCI-Datastore-02"
+  vsphere_resource_pool  = "Resources"
+  vsphere_network        = "/NetApp-HCI-Datacenter/network/tiab-prod"
+  vsphere_vm_template    = "/NetApp-HCI-Datacenter/vm/stuttgart-things/vm-templates/ubuntu23"
+  vm_ssh_user            = var.vm_ssh_user
+  vm_ssh_password        = var.vm_ssh_password
+  bootstrap              = ["echo STUTTGART-THINGS"]
+  annotation             = "VSPHERE-VM BUILD w/ TERRAFORM FOR STUTTGART-THINGS"
+  vsphere_user           = var.vsphere_user
+  vsphere_password       = var.vsphere_password
+  vsphere_server         = var.vsphere_server
 }
 
 variable "vsphere_server" {
   default     = false
-  type        = string
   description = "vsphere server"
 }
 
 variable "vsphere_user" {
   default     = false
-  type        = string
   description = "password of vsphere user"
 }
 
 variable "vsphere_password" {
   default     = false
-  type        = string
   description = "password of vsphere user"
 }
 
 variable "vm_ssh_user" {
-  default     = false
-  type        = string
+  default     = "sthings"
   description = "username of ssh user for vm"
 }
 
 variable "vm_ssh_password" {
   default     = false
-  type        = string
   description = "password of ssh user for vm"
 }
 ```
