@@ -33,8 +33,7 @@ resource "vsphere_virtual_machine" "vm" {
       host     = self.default_ip_address
       user     = var.vm_ssh_user
       password = var.vm_ssh_password
-      agent    = false
-
+      agent    = var.ssh_agent
     }
     inline = var.bootstrap
   }
@@ -45,6 +44,7 @@ resource "vsphere_virtual_machine" "vm" {
       host     = self.default_ip_address
       user     = var.vm_ssh_user
       password = var.vm_ssh_password
+      agent    = var.ssh_agent
     }
     inline = [
       "sudo echo '${count.index > 0 ? "${var.vsphere_vm_name}-${count.index + 1}" : var.vsphere_vm_name}' | sudo tee /etc/hostname",
