@@ -147,3 +147,9 @@ variable "unverified_ssl" {
   type        = bool
   description = "enable unverified_ssl"
 }
+
+variable "ssh_agent" {
+  default     = false
+  type        = bool
+  description = "set to false to disable using ssh-agent to authenticate."
+}
