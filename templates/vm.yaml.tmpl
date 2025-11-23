@@ -1,0 +1,89 @@
+module "{{ .name }}" {
+  source   = "github.com/stuttgart-things/vsphere-vm?ref=v1.7.5-2.7.0"
+  vm_count = {{ .count }}
+  vsphere_vm_name = "{{ .name }}"
+  vm_memory = {{ .ram }}
+  vsphere_vm_template = "{{ .template }}"
+  vm_disk_size = "{{ .disk }}"
+  vm_num_cpus = {{ .cpu }}
+  firmware = "{{ .firmware }}"
+  vsphere_vm_folder_path = "{{ .vm_folder }}"
+  vsphere_datacenter = "{{ .datacenter }}"
+  vsphere_datastore = "{{ .datastore }}"
+  vsphere_resource_pool = "{{ .resourcePool }}"
+  vsphere_network = "{{ .network }}"
+  bootstrap = ["echo STUTTGART-THINGS"]
+  annotation = "VSPHERE-VM {{ .name }} {{ .template }} BUILD w/ TERRAFORM FOR STUTTGART-THINGS"
+  vsphere_server         = data.vault_kv_secret_v2.vsphere.data["ip"]
+  vsphere_user           = data.vault_kv_secret_v2.vsphere.data["username"]
+  vsphere_password       = data.vault_kv_secret_v2.vsphere.data["password"]
+  vm_ssh_user            = data.vault_kv_secret_v2.vsphere.data["vm_ssh_user"]
+  vm_ssh_password        = data.vault_kv_secret_v2.vsphere.data["vm_ssh_password"]
+}
+
+variable "vsphere_server" {
+  default     = false
+  type        = string
+  description = "name of vsphere vm server"
+}
+
+variable "vm_ssh_user" {
+  default     = false
+  type        = string
+  description = "username of ssh user for vm"
+}
+
+variable "vm_ssh_password" {
+  default     = false
+  type        = string
+  description = "password of ssh user"
+  }
+
+variable "vsphere_user" {
+  default     = false
+  type        = string
+  description = "password of vsphere user"
+}
+
+variable "vsphere_password" {
+  default     = false
+  type        = string
+  description = "password of vsphere user"
+}
+
+output "ip" {
+  value = [module.{{ .name }}.ip]
+}
+
+provider "vault" {
+  address = var.vault_addr
+
+  auth_login {
+    path = "auth/approle/login"
+    parameters = {
+      role_id   = var.vault_role_id
+      secret_id = var.vault_secret_id
+    }
+  }
+}
+
+data "vault_kv_secret_v2" "vsphere" {
+  mount = "cloud"
+  name  = "vsphere-labul"
+}
+
+variable "vault_addr" {
+  type        = string
+  description = "Vault server address"
+}
+
+variable "vault_role_id" {
+  type        = string
+  description = "AppRole Role ID"
+}
+
+variable "vault_secret_id" {
+  type        = string
+  description = "AppRole Secret ID"
+  sensitive   = true
+}
