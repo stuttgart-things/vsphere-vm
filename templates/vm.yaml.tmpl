@@ -14,47 +14,55 @@ module "{{ .name }}" {
   vsphere_network = "{{ .network }}"
   bootstrap = ["echo STUTTGART-THINGS"]
   annotation = "VSPHERE-VM {{ .name }} {{ .template }} BUILD w/ TERRAFORM FOR STUTTGART-THINGS"
-  vsphere_server         = data.vault_kv_secret_v2.vsphere.data["ip"]
-  vsphere_user           = data.vault_kv_secret_v2.vsphere.data["username"]
-  vsphere_password       = data.vault_kv_secret_v2.vsphere.data["password"]
-  vm_ssh_user            = data.vault_kv_secret_v2.vsphere.data["vm_ssh_user"]
-  vm_ssh_password        = data.vault_kv_secret_v2.vsphere.data["vm_ssh_password"]
+  {{- if .useVault }}
+  vsphere_server   = data.vault_kv_secret_v2.vsphere.data["ip"]
+  vsphere_user     = data.vault_kv_secret_v2.vsphere.data["username"]
+  vsphere_password = data.vault_kv_secret_v2.vsphere.data["password"]
+  vm_ssh_user      = data.vault_kv_secret_v2.vsphere.data["vm_ssh_user"]
+  vm_ssh_password  = data.vault_kv_secret_v2.vsphere.data["vm_ssh_password"]
+  {{- else }}
+  vsphere_server   = var.vsphere_server
+  vsphere_user     = var.vsphere_user
+  vsphere_password = var.vsphere_password
+  vm_ssh_user      = var.vm_ssh_user
+  vm_ssh_password  = var.vm_ssh_password
+  {{- end }}
 }
 
+{{- if not .useVault }}
 variable "vsphere_server" {
-  default     = false
   type        = string
   description = "name of vsphere vm server"
 }
 
 variable "vm_ssh_user" {
-  default     = false
   type        = string
   description = "username of ssh user for vm"
 }
 
 variable "vm_ssh_password" {
-  default     = false
   type        = string
   description = "password of ssh user"
-  }
+  sensitive   = true
+}
 
 variable "vsphere_user" {
-  default     = false
   type        = string
-  description = "password of vsphere user"
+  description = "username of vsphere user"
 }
 
 variable "vsphere_password" {
-  default     = false
   type        = string
   description = "password of vsphere user"
+  sensitive   = true
 }
+{{- end }}
 
 output "ip" {
   value = [module.{{ .name }}.ip]
 }
 
+{{- if .useVault }}
 provider "vault" {
   address = var.vault_addr
 
@@ -69,7 +77,7 @@ provider "vault" {
 
 data "vault_kv_secret_v2" "vsphere" {
   mount = "cloud"
-  name  = "vsphere-labul"
+  name  = "{{ .vaultSecretPath }}"
 }
 
 variable "vault_addr" {
@@ -87,3 +95,4 @@ variable "vault_secret_id" {
   description = "AppRole Secret ID"
   sensitive   = true
 }
+{{- end }}
