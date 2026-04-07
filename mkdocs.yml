@@ -1,0 +1,10 @@
+site_name: vSphere VM
+site_description: Terraform module for creating vSphere virtual machines
+
+nav:
+  - Home: index.md
+  - Variables: variables.md
+  - CI/CD: CICD.md
+
+plugins:
+  - techdocs-core

@@ -1,0 +1,16 @@
+---
+name: Deploy Pages
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Validate and Release Terraform Module"]
+    types: [completed]
+
+jobs:
+  pages:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    uses: stuttgart-things/github-workflow-templates/.github/workflows/call-deploy-pages.yaml@main
+    with:
+      runs-on: ubuntu-latest
