@@ -2,6 +2,10 @@
 
 Terraform module for creating vSphere virtual machines based on the [hashicorp/vsphere](https://registry.terraform.io/providers/hashicorp/vsphere/latest) provider (v2.12.0).
 
+| | |
+|---|---|
+| Documentation | [stuttgart-things.github.io/vsphere-vm](https://stuttgart-things.github.io/vsphere-vm/) |
+
 ## Usage
 
 ```hcl
