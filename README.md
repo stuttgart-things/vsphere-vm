@@ -1,214 +1,116 @@
 # stuttgart-things/vsphere-vm
 
-terraform module for building/cloning vsphere vms based on existing vm-templates
+Terraform module for creating vSphere virtual machines based on the [hashicorp/vsphere](https://registry.terraform.io/providers/hashicorp/vsphere/latest) provider (v2.12.0).
 
-## USAGE TERRAFORM CLI
-
-<details><summary><b>TERRAFORM MODULE CALL</b></summary>
-
-change the values for the variables according to your vsphere environment and existing vm templates.
+## Usage
 
 ```hcl
-module "manager-dev" {
-  source                 = "github.com/stuttgart-things/vsphere-vm?ref=v1.7.5-2.7.0"
+module "vsphere-vm" {
+  source                 = "git::https://github.com/stuttgart-things/vsphere-vm.git"
+  vsphere_vm_name        = "my-vm"
   vm_count               = 1
-  vsphere_vm_name        = "manager-dev"
-  vm_memory              = 12288
-  vm_disk_size           = "128"
-  vm_num_cpus            = 12
+  vm_memory              = 4096
+  vm_num_cpus            = 4
+  vm_disk_size           = "32"
   firmware               = "bios"
   vsphere_vm_folder_path = "stuttgart-things/dev"
-  vsphere_datacenter     = "/NetApp-HCI-Datacenter"
-  vsphere_datastore      = "/NetApp-HCI-Datacenter/datastore/DatastoreCluster/NetApp-HCI-Datastore-02"
+  vsphere_datacenter     = "/MyDatacenter"
+  vsphere_datastore      = "/MyDatacenter/datastore/MyDatastore"
   vsphere_resource_pool  = "Resources"
-  vsphere_network        = "/NetApp-HCI-Datacenter/network/tiab-prod"
-  vsphere_vm_template    = "/NetApp-HCI-Datacenter/vm/stuttgart-things/vm-templates/ubuntu23"
+  vsphere_network        = "/MyDatacenter/network/VM Network"
+  vsphere_vm_template    = "/MyDatacenter/vm/templates/ubuntu24"
   vm_ssh_user            = var.vm_ssh_user
   vm_ssh_password        = var.vm_ssh_password
   bootstrap              = ["echo STUTTGART-THINGS"]
-  annotation             = "VSPHERE-VM BUILD w/ TERRAFORM FOR STUTTGART-THINGS"
   vsphere_user           = var.vsphere_user
   vsphere_password       = var.vsphere_password
   vsphere_server         = var.vsphere_server
 }
 
-variable "vsphere_server" {
-  default     = false
-  description = "vsphere server"
-}
-
-variable "vsphere_user" {
-  default     = false
-  description = "password of vsphere user"
-}
-
-variable "vsphere_password" {
-  default     = false
-  description = "password of vsphere user"
-}
-
-variable "vm_ssh_user" {
-  default     = "sthings"
-  description = "username of ssh user for vm"
-}
-
-variable "vm_ssh_password" {
-  default     = false
-  description = "password of ssh user for vm"
+output "ip" {
+  value = module.vsphere-vm.ip
 }
 ```
 
-</details>
+## Variables
 
-<details><summary><b>EXECUTE TERRAFORM / CREATE VM</b></summary>
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `vsphere_server` | string | - | vSphere server FQDN |
+| `vsphere_user` | string | - | vSphere API username |
+| `vsphere_password` | string | - | vSphere API password |
+| `unverified_ssl` | bool | `true` | Allow unverified SSL connections |
+| `vsphere_datacenter` | string | - | vSphere datacenter name |
+| `vsphere_datastore` | string | - | vSphere datastore path |
+| `vsphere_resource_pool` | string | - | Resource pool name |
+| `vsphere_network` | string | - | Network path |
+| `vsphere_vm_template` | string | - | VM template to clone from |
+| `vsphere_vm_folder_path` | string | `/` | Target VM folder path |
+| `vsphere_vm_name` | string | `terraform-vm` | VM name (1-32 chars, starts with letter) |
+| `vm_count` | number | `1` | Number of VMs (1-5) |
+| `vm_num_cpus` | number | `4` | CPU cores (2,4,6,8,10,12,16) |
+| `vm_memory` | number | `4096` | Memory in MB (1024,2048,4096,6144,8192,12288,16384,20480,24576) |
+| `vm_disk_size` | string | `"32"` | Disk size in GB (20,32,64,96,128,196,256) |
+| `vm_disk_label` | string | `"disk0"` | Disk label |
+| `firmware` | string | `"bios"` | Firmware type (bios or EFI) |
+| `annotation` | string | `====STUTTGART-THINGS/VM====` | VM notes in vCenter |
+| `vm_ssh_user` | string | - | SSH username for provisioner |
+| `vm_ssh_password` | string | - | SSH password for provisioner |
+| `ssh_agent` | bool | `false` | Use ssh-agent for authentication |
+| `bootstrap` | list(string) | `["whoami", "hostname"]` | Commands to run after VM creation |
 
-```bash
-terraform init
-terraform plan
+## Outputs
 
-terraform apply --auto-approve \
--var "vsphere_server=<FQDN>" \
--var "vm_ssh_user=<USER>" \
--var "vm_ssh_password=<PASSWORD>" \
--var "vsphere_user=<VSPHERE_USER>" \
--var "vsphere_password=<VSPHERE_PASSWORD>"
-```
+| Name | Description |
+|------|-------------|
+| `ip` | IPv4 addresses of created VMs |
 
-</details>
+## Crossplane Usage
 
-<details><summary><b>DESTROY VM(S)</b></summary>
-
-```bash
-terraform destroy --auto-approve
-```
-
-</details>
-
-## USAGE CROSSPLANE
-
-<details><summary><b>CREATE TFVARS AS SECRET</b></summary>
-
-```bash
-# CREATE terraform.tfvars
-cat <<EOF > terraform.tfvars
-vsphere_user = "<USER>"
-vsphere_password = "<PASSWORD>"
-vm_ssh_user = "<SSH_USER>"
-vm_ssh_password = "<SSH_PASSWORD>"
-EOF
-```
-
-```bash
-# CREATE SECRET
-kubectl create secret generic vsphere-tfvars --from-file=terraform.tfvars
-```
-
-</details>
-
-
-<details><summary><b>DEFINE (INLINE) WORKSPACE</b></summary>
+This module can be used with the [Upbound Terraform Provider](https://marketplace.upbound.io/providers/upbound/provider-terraform/) for Crossplane:
 
 ```yaml
 apiVersion: tf.upbound.io/v1beta1
 kind: Workspace
 metadata:
-  name: vsphere-vm-labda-1
-  annotations:
-    crossplane.io/external-name: vsphere-vm-labda-1
+  name: vsphere-vm-app
 spec:
+  providerConfigRef:
+    name: terraform-default
   forProvider:
-    source: Inline
-    module: |
-      module "labda-vm" {
-        source = "github.com/stuttgart-things/vsphere-vm"
-        vm_count               = 1
-        vsphere_vm_name        = "michigan3"
-        vm_memory              = 6144
-        vm_disk_size           = "64"
-        vm_num_cpus            = 6
-        firmware               = "bios"
-        vsphere_vm_folder_path = "stuttgart-things/testing"
-        vsphere_datacenter     = "/NetApp-HCI-Datacenter"
-        vsphere_datastore      = "/NetApp-HCI-Datacenter/datastore/DatastoreCluster/NetApp-HCI-Datastore-02"
-        vsphere_resource_pool  = "Resources"
-        vsphere_network        = "/NetApp-HCI-Datacenter/network/tiab-prod"
-        vsphere_vm_template    = "/NetApp-HCI-Datacenter/vm/stuttgart-things/vm-templates/ubuntu23"
-        vm_ssh_user            = var.vm_ssh_user
-        vm_ssh_password        = var.vm_ssh_password
-        bootstrap              = ["echo STUTTGART-THINGS"]
-        annotation             = "VSPHERE-VM BUILD w/ TERRAFORM CROSSPLANE PROVIDER FOR STUTTGART-THINGS"
-      }
-
-      provider "vsphere" {
-        user                 = var.vsphere_user
-        password             = var.vsphere_password
-        vsphere_server       = var.vsphere_server
-        allow_unverified_ssl = true
-      }
-
-      variable "vsphere_server" {
-        type        = string
-        default     = false
-        description = "vsphere server"
-      }
-
-      variable "vsphere_user" {
-        type        = string
-        default     = false
-        description = "password of vsphere user"
-      }
-
-      variable "vsphere_password" {
-        type        = string
-        default     = false
-        description = "password of vsphere user"
-      }
-
-      variable "vm_ssh_user" {
-        type        = string
-        default     = false
-        description = "username of ssh user for vm"
-      }
-
-      variable "vm_ssh_password" {
-        type        = string
-        default     = false
-        description = "password of ssh user for vm"
-      }
-
+    source: Remote
+    module: git::https://github.com/stuttgart-things/vsphere-vm.git
+    vars:
+      - key: vm_count
+        value: "1"
+      - key: vsphere_vm_name
+        value: appserver
+      - key: vm_num_cpus
+        value: "4"
+      - key: vm_memory
+        value: "4096"
+      - key: vm_disk_size
+        value: "64"
+      - key: firmware
+        value: bios
+      - key: vsphere_vm_folder_path
+        value: stuttgart-things/dev
+      - key: vsphere_datacenter
+        value: /MyDatacenter
+      - key: vsphere_datastore
+        value: /MyDatacenter/datastore/MyDatastore
+      - key: vsphere_resource_pool
+        value: Resources
+      - key: vsphere_network
+        value: /MyDatacenter/network/VM Network
+      - key: vsphere_vm_template
+        value: /MyDatacenter/vm/templates/ubuntu24
     varFiles:
       - source: SecretKey
         secretKeyRef:
           namespace: default
           name: vsphere-tfvars
           key: terraform.tfvars
-  writeConnectionSecretToRef:
-    namespace: default
-    name: terraform-workspace-vsphere-vm-labda-1
-```
-
-</details>
-
-<details><summary><b>CREATE WORKSPACE</b></summary>
-
-```bash
-kubectl apply -f <WORKSPACE-DEFINITION>.yaml
-```
-
-</details>
-
-<details><summary><b>DELETE WORKSPACE</b></summary>
-
-```bash
-kubectl delete workspace vsphere-vm-labda-1
-```
-
-</details>
-
-## Author Information
-
-```bash
-Patrick Hermann, stuttgart-things 12/2019
 ```
 
 ## License
@@ -217,6 +119,6 @@ Licensed under the Apache License, Version 2.0 (the "License").
 
 You may obtain a copy of the License at [apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an _"AS IS"_ basis, without WARRANTIES or conditions of any kind, either express or implied.
+## Author Information
 
-See the License for the specific language governing permissions and limitations under the License.
+Patrick Hermann, stuttgart-things 12/2019
