@@ -1,21 +1,40 @@
 ---
-name: Validate Terraform
+name: Terraform
 on:
+  workflow_dispatch:
   push:
     branches:
-      - main
-      - feature/*
-      - fix/*
+      - 'feature/**'
+      - 'feat/**'
+      - 'fix/**'
+      - 'renovate/**'
   pull_request:
     types: [opened, reopened]
 
 jobs:
   validate-terraform:
-    name: Valdiate
-    uses: stuttgart-things/stuttgart-things/.github/workflows/validate-terraform.yaml@main  
+    name: Validate
+    uses: stuttgart-things/github-workflow-templates/.github/workflows/call-validate-terraform.yaml@main
     with:
       environment-name: k8s
-      runs-on: ghr-vsphere-vm-cicd
-      terraform-version: 1.7.5
-      tflint-version: v0.50.3
+      runs-on: ghr-vsphere-vm-in-cluster
+      terraform-version: 1.10.5
+      tflint-version: v0.55.1
+      continue-error: false
+
+  terraform-docs:
+    name: Docs
+    uses: stuttgart-things/github-workflow-templates/.github/workflows/call-terraform-docs.yaml@main
+    with:
+      environment-name: k8s
+      runs-on: ghr-vsphere-vm-in-cluster
+      continue-error: false
+
+  terraform-security:
+    name: Security
+    uses: stuttgart-things/github-workflow-templates/.github/workflows/call-terraform-security.yaml@main
+    with:
+      environment-name: k8s
+      runs-on: ghr-vsphere-vm-in-cluster
+      severity: HIGH,CRITICAL
       continue-error: false
