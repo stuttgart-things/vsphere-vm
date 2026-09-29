@@ -45,7 +45,7 @@ output "ip" {
 | `vsphere_password` | string | - | vSphere API password |
 | `unverified_ssl` | bool | `true` | Allow unverified SSL connections |
 | `vsphere_datacenter` | string | - | vSphere datacenter name |
-| `vsphere_datastore` | string | - | vSphere datastore path |
+| `vsphere_datastore` | string | - | vSphere datastore path — **used at create time only** (see below) |
 | `vsphere_resource_pool` | string | - | Resource pool name |
 | `vsphere_network` | string | - | Network path |
 | `vsphere_vm_template` | string | - | VM template to clone from |
@@ -62,6 +62,18 @@ output "ip" {
 | `vm_ssh_password` | string | - | SSH password for provisioner |
 | `ssh_agent` | bool | `false` | Use ssh-agent for authentication |
 | `bootstrap` | list(string) | `["whoami", "hostname"]` | Commands to run after VM creation |
+
+## Datastore: placement, not state (1.1.0)
+
+`vsphere_datastore` decides where a VM is **created**. After that the module ignores the VM's datastore (`lifecycle.ignore_changes` on `datastore_id` and `disk[0].datastore_id`), so moving a VM — a Storage vMotion by hand, or Storage DRS inside a datastore cluster — no longer makes the next `terraform apply` migrate it back.
+
+To move an existing VM, migrate it and then update `vsphere_datastore` so the code says where it lives:
+
+```bash
+govc vm.migrate -ds <datastore> <vm-path>
+```
+
+Changing `vsphere_datastore` alone does **not** move an existing VM any more.
 
 ## Outputs
 
