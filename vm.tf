@@ -53,4 +53,18 @@ resource "vsphere_virtual_machine" "vm" {
     ]
     on_failure = continue
   }
+
+  # The datastore is a PLACEMENT decision made at create time, not state to
+  # enforce. A Storage vMotion -- by hand, or by Storage DRS inside a datastore
+  # cluster -- would otherwise make the next apply migrate the VM back to
+  # `vsphere_datastore`. Seen in LabDA (2026-09-29): sthings-infra had been
+  # moved off its configured datastore by SDRS, and sthings-platform had to be
+  # moved off a congested one by hand. Changing `vsphere_datastore` now affects
+  # new VMs only; move an existing one with `govc vm.migrate -ds <datastore>`.
+  lifecycle {
+    ignore_changes = [
+      datastore_id,
+      disk[0].datastore_id,
+    ]
+  }
 }
