@@ -48,7 +48,8 @@ output "ip" {
 | `vsphere_datastore` | string | - | vSphere datastore path — **used at create time only** (see below) |
 | `vsphere_resource_pool` | string | - | Resource pool name |
 | `vsphere_network` | string | - | Network path |
-| `vsphere_vm_template` | string | - | VM template to clone from |
+| `vsphere_vm_template` | string | - | VM template to clone from: an inventory path relative to the datacenter's vm folder (e.g. `stuttgart-things/vm-templates/sthings-u26`) or a unique name — **used at create time only** |
+| `vsphere_vm_template_uuid` | string | `null` | Template `config.uuid`; when set, the template is looked up by UUID instead of `vsphere_vm_template` |
 | `vsphere_vm_folder_path` | string | `/` | Target VM folder path |
 | `vsphere_vm_name` | string | `terraform-vm` | VM name (1-32 chars, starts with letter) |
 | `vm_count` | number | `1` | Number of VMs (1-5) |
@@ -72,6 +73,20 @@ To move an existing VM, migrate it and then update `vsphere_datastore` so the co
 ```bash
 govc vm.migrate -ds <datastore> <vm-path>
 ```
+
+## Template: clone source, not state (1.2.0)
+
+The template only matters when a VM is **created**. `clone` is ForceNew in the provider, and `guest_id`, `scsi_type`, the NIC adapter type and the disk's provisioning are copied from the template. Up to 1.1.0, a template rebuild or promotion — the golden image `sthings-u26` renamed to a newer build, so the same name resolved to a new UUID — made the next `terraform apply` **replace every VM** cloned from it. Since 1.2.0 the module ignores those changes (`lifecycle.ignore_changes`), so existing VMs stay put and only new VMs pick up the new template.
+
+To rebuild a VM from the current template on purpose:
+
+```bash
+terraform apply -replace='module.<name>.vsphere_virtual_machine.vm[0]'
+```
+
+**Name lookup.** `vsphere_vm_template` is resolved datacenter-wide. A bare name such as `sthings-u26` fails with `resolves to multiple vms` as soon as a second object carries that name anywhere (an old build, a parked copy). Use the inventory path relative to the datacenter's vm folder, e.g. `stuttgart-things/vm-templates/sthings-u26`, or pin the template by `vsphere_vm_template_uuid`. Note that the lookup still runs on every plan, so `ignore_changes` does not help if the name cannot be resolved at all.
+
+**Upgrading from 1.1.0 or earlier:** bump the `ref`, switch `vsphere_vm_template` to the path, and check `terraform plan` shows no `-/+` (replace) before applying.
 
 Changing `vsphere_datastore` alone does **not** move an existing VM any more.
 

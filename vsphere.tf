@@ -17,7 +17,12 @@ data "vsphere_network" "network" {
   datacenter_id = data.vsphere_datacenter.dc.id
 }
 
+# By UUID when vsphere_vm_template_uuid is set, else by name. A bare name is
+# resolved datacenter-wide and fails with "resolves to multiple vms" as soon as
+# a second object carries it anywhere; prefer an inventory path relative to
+# the datacenter's vm folder, e.g. "stuttgart-things/vm-templates/sthings-u26".
 data "vsphere_virtual_machine" "template" {
-  name          = var.vsphere_vm_template
+  name          = var.vsphere_vm_template_uuid == null ? var.vsphere_vm_template : null
+  uuid          = var.vsphere_vm_template_uuid
   datacenter_id = data.vsphere_datacenter.dc.id
 }
