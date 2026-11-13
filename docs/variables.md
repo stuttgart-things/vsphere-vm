@@ -17,7 +17,8 @@
 | `vsphere_datastore` | string | - | vSphere datastore path |
 | `vsphere_resource_pool` | string | - | Resource pool name |
 | `vsphere_network` | string | - | Network path |
-| `vsphere_vm_template` | string | - | VM template to clone from |
+| `vsphere_vm_template` | string | - | VM template to clone from: an inventory path relative to the datacenter's vm folder (e.g. `stuttgart-things/vm-templates/sthings-u26`) or a unique name — **used at create time only** |
+| `vsphere_vm_template_uuid` | string | `null` | Template `config.uuid`; when set, the template is looked up by UUID instead of `vsphere_vm_template` |
 | `vsphere_vm_folder_path` | string | `/` | Target VM folder path |
 
 ## VM Configuration

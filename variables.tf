@@ -31,7 +31,13 @@ variable "vsphere_network" {
 variable "vsphere_vm_template" {
   default     = false
   type        = string
-  description = "name of vsphere vm template"
+  description = "vSphere template to clone: a name (resolved datacenter-wide, must be unique) or, better, an inventory path relative to the datacenter's vm folder, e.g. \"stuttgart-things/vm-templates/sthings-u26\". Ignored when vsphere_vm_template_uuid is set."
+}
+
+variable "vsphere_vm_template_uuid" {
+  default     = null
+  type        = string
+  description = "config.uuid of the template to clone. When set, the template is looked up by UUID instead of vsphere_vm_template, so renames and promotions of the template cannot change which one is meant."
 }
 
 variable "vsphere_vm_name" {

@@ -61,10 +61,23 @@ resource "vsphere_virtual_machine" "vm" {
   # moved off its configured datastore by SDRS, and sthings-platform had to be
   # moved off a congested one by hand. Changing `vsphere_datastore` now affects
   # new VMs only; move an existing one with `govc vm.migrate -ds <datastore>`.
+  #
+  # The TEMPLATE is likewise a create-time input. `clone` is ForceNew, and the
+  # attributes below are copied from the template; without ignoring them a
+  # template rebuild or promotion (`sthings-u26` renamed to a new build, so the
+  # name resolves to a new UUID) makes the next apply REPLACE every VM cloned
+  # from it, although nothing about the VM changed (#15). Re-create a VM from a
+  # newer template deliberately: `terraform apply -replace=...`.
   lifecycle {
     ignore_changes = [
       datastore_id,
       disk[0].datastore_id,
+      clone,
+      guest_id,
+      scsi_type,
+      network_interface[0].adapter_type,
+      disk[0].eagerly_scrub,
+      disk[0].thin_provisioned,
     ]
   }
 }
